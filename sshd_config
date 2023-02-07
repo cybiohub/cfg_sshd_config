@@ -93,7 +93,7 @@ AuthorizedKeysFile %h/.ssh/authorized_keys
 
 # ## Needed for Google-Authenticator.
 # Change to yes to enable challenge-response passwords (beware issues with some PAM modules and threads)
-ChallengeResponseAuthentication yes
+ChallengeResponseAuthentication no
 
 # ## Needed for SSHFS.
 Subsystem sftp /usr/lib/openssh/sftp-server

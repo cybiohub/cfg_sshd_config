@@ -1,0 +1,16 @@
+V1.2.26 - 2022-12-01
+
+## Added
+ - Added somes comment for STIG/CISOFY recommendations.
+
+## Fixed
+ - Enforce use of 0.0.0.0 to not leave the default. We recommend that you put the IP address of your interface instead.
+
+
+...space warp...live long and prosper...
+
+
+V0.0.1 - 2016-12-14
+
+## Added
+ - Creation of the first configuration of SSHD service complying with Cybionet standards.
