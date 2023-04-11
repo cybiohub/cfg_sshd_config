@@ -3,12 +3,12 @@
 # * Author:             (c) 2004-2023  Cybionet - Integration & Securite Systeme 
 # * 
 # * File:               sshd_conf 
-# * Version:            1.2.26
+# * Version:            1.2.27
 # * 
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   January 10, 2023
+# * Change:   April 11, 2023
 # * 
 # ************************************************************************  
 
@@ -23,6 +23,7 @@ ListenAddress 0.0.0.0
 ############ ALGORITHMS ##########################
 
 # ## Key exchange algorithms (check to adjust with ssh-audit).
+# ## STIG [V-255912] (Value 'ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256' is recommended).
 KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256
 
 # ## Host-key algorithms (check with ssh-audit).
@@ -31,7 +32,7 @@ HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 
 # ## Encryption algorithms (ciphers) (check with ssh-audit).
-# ## STIG [V-238217]dd (Value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr' is recommended).
+# ## STIG [V-238217] (Value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr' is recommended).
 Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com
 
 # ## Message authentication code algorithms (check with ssh-audit).
@@ -56,6 +57,9 @@ LogLevel INFO
 # ## STIG [V-25274] (Recommended value 'LoginGraceTime 1m').
 LoginGraceTime 1m
 PermitRootLogin no
+
+# ## With the StrictModes option, it will only use those files which are properly configured (e.g. not using chmod 777 applied).
+# ## Cisofy [SSH-7416] (Value 'yes' is recommended).
 StrictModes yes
 
 # ## Cisofy [SSH-7408] (Value '3' is recommended).
@@ -67,21 +71,21 @@ MaxSessions 2
 # ## Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon.
 MaxStartups 10:30:100
 
-# ## STIG [UBTU-20-010037] (Value '15' is recommended).
+# ## STIG [V238213] (Value '600 or less' is recommended).
 ClientAliveInterval 300
 
-# ## STIG [V-72241] (Value '0' is recommended).
-ClientAliveCountMax 0
+# ## STIG [V-238212] (Value '1' is recommended).
+ClientAliveCountMax 1
 
-# Set this to 'yes' to enable PAM authentication, account processing,
-# and session processing. If this is enabled, PAM authentication will
-# be allowed through the ChallengeResponseAuthentication and
-# PasswordAuthentication.  Depending on your PAM configuration,
-# PAM authentication via ChallengeResponseAuthentication may bypass
-# the setting of "PermitRootLogin no".
-# If you just want the PAM account and session checks to run without
-# PAM authentication, then enable this but set PasswordAuthentication
-# and ChallengeResponseAuthentication to 'no'.
+# ## Set this to 'yes' to enable PAM authentication, account processing,
+# ## and session processing. If this is enabled, PAM authentication will
+# ## be allowed through the ChallengeResponseAuthentication and
+# ## PasswordAuthentication.  Depending on your PAM configuration,
+# ## PAM authentication via ChallengeResponseAuthentication may bypass
+# ## the setting of "PermitRootLogin no".
+# ## If you just want the PAM account and session checks to run without
+# ## PAM authentication, then enable this but set PasswordAuthentication
+# ## and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
 
 
@@ -92,7 +96,7 @@ PubkeyAuthentication yes
 AuthorizedKeysFile %h/.ssh/authorized_keys
 
 # ## Needed for Google-Authenticator.
-# Change to yes to enable challenge-response passwords (beware issues with some PAM modules and threads)
+# ## Change to yes to enable challenge-response passwords (beware issues with some PAM modules and threads)
 ChallengeResponseAuthentication no
 
 # ## Needed for SSHFS.
@@ -101,7 +105,7 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 # ## Needed for Yubikey.
 #PubkeyAcceptedKeyTypes sk-ecdsa-sha2-nistp256@openssh.com,sk-ssh-ed25519@openssh.com
 
-# ## Needed for AutoSSH or VSCode (Set value to yes).
+# ## Needed for AutoSSH, VSCode or Port Forwarding (Set value to yes).
 AllowTcpForwarding yes
 
 # ## This one for sockets connexion (Defaut yes).
@@ -144,39 +148,43 @@ IgnoreRhosts yes
 HostbasedAuthentication no
 
 # ## Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
-#IgnoreUserKnownHosts yes
+# ## STIG [V-230290] (Recommended value 'yes').
+IgnoreUserKnownHosts yes
 
 # ## Users are not allowed to set environment options for SSH. An attacker may be able to bypass some access restrictions over SSH.
-# ## STIG [V-38616] (Value 'No' is recommended).
+# ## STIG [V-238218] (Recommended value 'no').
 # ## CCE-14716-5
 PermitUserEnvironment no
 
-# ## STIG [V-63213] (Value 'No' is recommended).
+# ## STIG [V-63213][V-230330] (Recommended value 'no').
 GatewayPorts no
 
-#UseLogin no
+# ## STIG [V-230527] (Recommended value '1G 1h').
+RekeyLimit 1G 1h
 
 
 ############ PASSWORD ############################
-# To enable empty passwords, change to yes (NOT RECOMMENDED)
+# ## To enable empty passwords, change to yes (NOT RECOMMENDED)
+# ## STIG [V-238218] (Recommended value 'no').
 PermitEmptyPasswords no
 
-# Change to no to disable tunnelled clear text passwords
+# ## Change to no to disable tunnelled clear text passwords
 PasswordAuthentication yes
 
 
 ############ LANGUAGE ############################
-# Allow client to pass locale environment variables
+# ## Allow client to pass locale environment variables
 AcceptEnv LANG LC_*
 
 
 ############ X11 #################################
-# ## 
 # ##STIG [V-238219] (Recommended value 'no').
 X11Forwarding no
 
 X11DisplayOffset 10
-#X11UseLocalhost yes
+
+# ## STIG [V-238220] (Recommended value 'yes').
+X11UseLocalhost yes
 
 
 ############ MOTD & BANNER #######################
