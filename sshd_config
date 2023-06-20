@@ -204,14 +204,18 @@ VersionAddendum - Cybionet
 UseDNS no
 
 
-############ RESTRICTED GROUPS ###################
+############ RESTRICTED USERS/GROUPS #############
+# ## The allow/deny directives are processed in the following order: 
+# ## DenyUsers, AllowUsers, DenyGroups, and finally AllowGroups.
+
 # ## Groupe Restreint.
 AllowGroups restricted
-#DenyGroups mygroup
 
-# ## Restricted Users.
-#AllowUsers myuser
-#DenyUsers myuser
+
+# ## User Restreint with restricted group.
+#AllowUsers ans_deploy
+#Match group restricted
+#  AllowUsers *
 
 
 ############ CHROOT ##############################
