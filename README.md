@@ -38,7 +38,7 @@ sudo usermod -a -G restricted yourusername
 3. Add a sudoers file to allow restricted group to use sudo command.
 
 ```bash
-vim /etc/sudoers.d/restricted
+sudo vim /etc/sudoers.d/restricted
 ```
 
 and put this line in the file.
