@@ -56,6 +56,9 @@ LogLevel INFO
 # ## Ensure SSH LoginGraceTime is set to one minute or less.
 # ## STIG [V-25274] (Recommended value 'LoginGraceTime 1m').
 LoginGraceTime 1m
+
+# ## Verify remote access using SSH prevents users from logging on directly as root.
+# ## STIG [75827] (Value 'no' is recommended).
 PermitRootLogin no
 
 # ## With the StrictModes option, it will only use those files which are properly configured (e.g. not using chmod 777 applied).
@@ -208,9 +211,8 @@ UseDNS no
 # ## The allow/deny directives are processed in the following order: 
 # ## DenyUsers, AllowUsers, DenyGroups, and finally AllowGroups.
 
-# ## Groupe Restreint.
+# ## Restricted group.
 AllowGroups restricted
-
 
 # ## User Restreint with restricted group.
 #AllowUsers ans_deploy
