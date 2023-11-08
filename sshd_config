@@ -3,12 +3,12 @@
 # * Author:             (c) 2004-2023  Cybionet - Integration & Securite Systeme 
 # * 
 # * File:               sshd_conf 
-# * Version:            1.2.27
+# * Version:            1.2.28
 # * 
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   April 11, 2023
+# * Change:   November 07, 2023
 # * 
 # ************************************************************************  
 
@@ -38,7 +38,7 @@ Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.
 # ## Message authentication code algorithms (check with ssh-audit).
 # ## The hmac-sha2-512 algorithm is required for PowerShell scripts using the Set-SCPFile function.
 # ## STIG [V-238216] (Value 'MACs hmac-sha2-512,hmac-sha2-256' is recommended).
-MACs umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
 
 # ## Keying
 #RekeyLimit default none
@@ -72,6 +72,7 @@ MaxAuthTries 3
 MaxSessions 2
 
 # ## Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon.
+# ## Protect a system from denial of service due to a large number of pending authentication connection attempts.
 MaxStartups 10:30:100
 
 # ## STIG [V238213] (Value '600 or less' is recommended).
@@ -99,17 +100,17 @@ PubkeyAuthentication yes
 AuthorizedKeysFile %h/.ssh/authorized_keys
 
 # ## Needed for Google-Authenticator.
-# ## Change to yes to enable challenge-response passwords (beware issues with some PAM modules and threads)
+# ## Change to 'yes' to enable challenge-response passwords (beware issues with some PAM modules and threads)
 ChallengeResponseAuthentication no
 
 # ## Needed for SSHFS.
-Subsystem sftp /usr/lib/openssh/sftp-server
+#Subsystem sftp /usr/lib/openssh/sftp-server
 
 # ## Needed for Yubikey.
 #PubkeyAcceptedKeyTypes sk-ecdsa-sha2-nistp256@openssh.com,sk-ssh-ed25519@openssh.com
 
-# ## Needed for AutoSSH, VSCode or Port Forwarding (Set value to yes).
-AllowTcpForwarding yes
+# ## Needed for AutoSSH, VSCode or Port Forwarding (Set value to 'no' if not use).
+AllowTcpForwarding no
 
 # ## This one for sockets connexion (Defaut yes).
 #AllowStreamLocalForwarding yes
@@ -133,13 +134,13 @@ AllowTcpForwarding yes
 
 ############ ############ ########################
 
-# ## Cisofy [SSH-7408] (Value 'No' is recommended).
+# ## Cisofy [SSH-7408] (Recommended value 'no').
 TCPKeepAlive yes
 
-# ## Cisofy [SSH-7408] (Value 'No' is remommended).
+# ## Cisofy [SSH-7408] (Recommended value 'no').
 AllowAgentForwarding no
 
-# ## Cisofy [SSH-7408] (Value 'No' is recommended).
+# ## Cisofy [SSH-7408] (Recommended value 'no').
 Compression no
 
 # ## An attacker could use flaws in the Rhosts protocol to gain access. Don't read the user's ~/.rhosts and ~/.shosts files.
@@ -167,7 +168,7 @@ RekeyLimit 1G 1h
 
 
 ############ PASSWORD ############################
-# ## To enable empty passwords, change to yes (NOT RECOMMENDED)
+# ## To enable empty passwords, change to 'yes' (NOT RECOMMENDED)
 # ## STIG [V-238218] (Recommended value 'no').
 PermitEmptyPasswords no
 
@@ -181,7 +182,7 @@ AcceptEnv LANG LC_*
 
 
 ############ X11 #################################
-# ##STIG [V-238219] (Recommended value 'no').
+# ## STIG [V-238219] (Recommended value 'no').
 X11Forwarding no
 
 X11DisplayOffset 10
@@ -216,6 +217,7 @@ AllowGroups restricted
 
 # ## User Restreint with restricted group.
 #AllowUsers ans_deploy
+
 #Match group restricted
 #  AllowUsers *
 
