@@ -8,7 +8,7 @@
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   November 07, 2023
+# * Change:   November 28, 2023
 # * 
 # ************************************************************************  
 
@@ -38,7 +38,7 @@ Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.
 # ## Message authentication code algorithms (check with ssh-audit).
 # ## The hmac-sha2-512 algorithm is required for PowerShell scripts using the Set-SCPFile function.
 # ## STIG [V-238216] (Value 'MACs hmac-sha2-512,hmac-sha2-256' is recommended).
-MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
 
 # ## Keying
 #RekeyLimit default none
@@ -75,8 +75,8 @@ MaxSessions 2
 # ## Protect a system from denial of service due to a large number of pending authentication connection attempts.
 MaxStartups 10:30:100
 
-# ## STIG [V238213] (Value '600 or less' is recommended).
-ClientAliveInterval 300
+# ## STIG [V-238213] (Value '600 or less' is recommended).
+ClientAliveInterval 600
 
 # ## STIG [V-238212] (Value '1' is recommended).
 ClientAliveCountMax 1
@@ -196,7 +196,8 @@ PrintMotd no
 PrintLastLog yes
 
 # ## Default banner path.
-#Banner none
+# ## STIG [V-238218].
+Banner none
 Banner /etc/issue.net
 
 # ## Annotation added to SSHD version.
