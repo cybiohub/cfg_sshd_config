@@ -19,6 +19,7 @@ Here is a sshd_config configuration file for the SSHD service annotate according
 	- Message authentication code algorithms
 - And a lot of useful comments in the configuration.
 - Uses a restricted group to allow the user to login via SSH.
+- Removal of algorithms vulnerable to Terrapin.
 
 
 ## RESTRICTED GROUP

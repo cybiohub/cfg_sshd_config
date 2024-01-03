@@ -1,3 +1,13 @@
+V1.2.29 - 2024-01-01
+
+## Fixed
+ - Remove algorithm 'chacha20-poly1305' to protect from Terrapin vulnerability.
+
+## Added
+ - Added somes comment for STIG recommendations.
+ - Added an issue.net example file.
+
+
 V1.2.28 - 2023-11-08
 
 ## Added

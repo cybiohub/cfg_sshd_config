@@ -1,14 +1,14 @@
 # * ************************************************************************ 
 # * 
-# * Author:             (c) 2004-2023  Cybionet - Integration & Securite Systeme 
+# * Author:             (c) 2004-2024  Cybionet - Integration & Securite Systeme 
 # * 
 # * File:               sshd_conf 
-# * Version:            1.2.28
+# * Version:            1.2.29
 # * 
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   November 28, 2023
+# * Change:   January 01, 2024
 # * 
 # ************************************************************************  
 
@@ -27,28 +27,30 @@ ListenAddress 0.0.0.0
 KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256
 
 # ## Host-key algorithms (check with ssh-audit).
-# ## STIG [V-238216]
+# ## STIG [V-238216].
 HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 
 # ## Encryption algorithms (ciphers) (check with ssh-audit).
 # ## STIG [V-238217] (Value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr' is recommended).
-Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com
+# ## Azure CCEID [CCE-14491-5]: aes128-ctr,aes256-ctr,aes192-ctr.
+Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com
 
 # ## Message authentication code algorithms (check with ssh-audit).
 # ## The hmac-sha2-512 algorithm is required for PowerShell scripts using the Set-SCPFile function.
 # ## STIG [V-238216] (Value 'MACs hmac-sha2-512,hmac-sha2-256' is recommended).
+# ## Azure: hmac-sha2-512,hmac-sha2-256.
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
 
-# ## Keying
+# ## Keying.
 #RekeyLimit default none
 
 
 ############ LOG PARAMETERS ######################
-# ## Logging
+# ## Logging.
 SyslogFacility AUTH
 
-# ## Cisofy [SSH-7408] (Value VERBOSE is recommended).
+# ## Cisofy [SSH-7408] (Value 'VERBOSE' is recommended).
 LogLevel INFO
 
 
@@ -58,7 +60,7 @@ LogLevel INFO
 LoginGraceTime 1m
 
 # ## Verify remote access using SSH prevents users from logging on directly as root.
-# ## STIG [75827] (Value 'no' is recommended).
+# ## STIG [V-75827] (Value 'no' is recommended).
 PermitRootLogin no
 
 # ## With the StrictModes option, it will only use those files which are properly configured (e.g. not using chmod 777 applied).
@@ -75,9 +77,11 @@ MaxSessions 2
 # ## Protect a system from denial of service due to a large number of pending authentication connection attempts.
 MaxStartups 10:30:100
 
+# ## Indicates the timeout in seconds. After x number of seconds, ssh server will send a message to the client asking for response (Default is '0').
 # ## STIG [V-238213] (Value '600 or less' is recommended).
 ClientAliveInterval 600
 
+# ## Indicates the total number of checkalive message sent by the ssh server without getting any response from the ssh client (Default is '3').
 # ## STIG [V-238212] (Value '1' is recommended).
 ClientAliveCountMax 1
 
@@ -94,13 +98,12 @@ UsePAM yes
 
 
 ############ APPLICATIONS ########################
-
 # ## Needed for Ansible.
 PubkeyAuthentication yes
 AuthorizedKeysFile %h/.ssh/authorized_keys
 
 # ## Needed for Google-Authenticator.
-# ## Change to 'yes' to enable challenge-response passwords (beware issues with some PAM modules and threads)
+# ## Change to 'yes' to enable challenge-response passwords (beware issues with some PAM modules and threads).
 ChallengeResponseAuthentication no
 
 # ## Needed for SSHFS.
@@ -112,7 +115,7 @@ ChallengeResponseAuthentication no
 # ## Needed for AutoSSH, VSCode or Port Forwarding (Set value to 'no' if not use).
 AllowTcpForwarding no
 
-# ## This one for sockets connexion (Defaut yes).
+# ## This one for sockets connexion (Defaut is 'yes').
 #AllowStreamLocalForwarding yes
 
 
@@ -144,20 +147,20 @@ AllowAgentForwarding no
 Compression no
 
 # ## An attacker could use flaws in the Rhosts protocol to gain access. Don't read the user's ~/.rhosts and ~/.shosts files.
-# ## CCE-4030-3
+# ## Azure CCEID [CCE-4030-3].
 IgnoreRhosts yes
 
 # ## For this to work you will also need host keys in /etc/ssh/ssh_known_hosts. An attacker could use use host-based authentication to gain access from a compromised host.
-# ## CCE-4370-3
+# ## Azure CCEID [CCE-4370-3].
 HostbasedAuthentication no
 
-# ## Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
+# ## Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication.
 # ## STIG [V-230290] (Recommended value 'yes').
 IgnoreUserKnownHosts yes
 
 # ## Users are not allowed to set environment options for SSH. An attacker may be able to bypass some access restrictions over SSH.
 # ## STIG [V-238218] (Recommended value 'no').
-# ## CCE-14716-5
+# ## Azure CCEID [CCE-14716-5].
 PermitUserEnvironment no
 
 # ## STIG [V-63213][V-230330] (Recommended value 'no').
@@ -168,16 +171,16 @@ RekeyLimit 1G 1h
 
 
 ############ PASSWORD ############################
-# ## To enable empty passwords, change to 'yes' (NOT RECOMMENDED)
+# ## To enable empty passwords, change to 'yes' (NOT RECOMMENDED).
 # ## STIG [V-238218] (Recommended value 'no').
 PermitEmptyPasswords no
 
-# ## Change to no to disable tunnelled clear text passwords
+# ## Change to 'no' to disable tunneled clear text passwords.
 PasswordAuthentication yes
 
 
 ############ LANGUAGE ############################
-# ## Allow client to pass locale environment variables
+# ## Allow client to pass locale environment variables.
 AcceptEnv LANG LC_*
 
 
@@ -193,15 +196,18 @@ X11UseLocalhost yes
 
 ############ MOTD & BANNER #######################
 PrintMotd no
-PrintLastLog yes
 
 # ## Default banner path.
 # ## STIG [V-238218].
-Banner none
+#Banner none
 Banner /etc/issue.net
 
 # ## Annotation added to SSHD version.
 VersionAddendum - Cybionet
+
+# ## Display the date and time of the last successful account logon upon logon.
+# ## STIG [V-72245].
+PrintLastLog yes
 
 
 ############ DNS #################################
@@ -219,7 +225,7 @@ AllowGroups restricted
 # ## User Restreint with restricted group.
 #AllowUsers ans_deploy
 
-#Match group restricted
+#Match group restricted.
 #  AllowUsers *
 
 
