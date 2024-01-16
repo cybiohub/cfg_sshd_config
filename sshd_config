@@ -34,6 +34,7 @@ HostKey /etc/ssh/ssh_host_ed25519_key
 # ## Encryption algorithms (ciphers) (check with ssh-audit).
 # ## STIG [V-238217] (Value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr' is recommended).
 # ## Azure CCEID [CCE-14491-5]: aes128-ctr,aes256-ctr,aes192-ctr.
+# ## Terrapin vulnerability (CVE-2023-48795): chacha20-poly1305@openssh.com
 Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com
 
 # ## Message authentication code algorithms (check with ssh-audit).
