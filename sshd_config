@@ -3,12 +3,12 @@
 # * Author:             (c) 2004-2024  Cybionet - Integration & Securite Systeme 
 # * 
 # * File:               sshd_conf 
-# * Version:            1.2.29
+# * Version:            1.2.30
 # * 
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   January 01, 2024
+# * Change:   February 13, 2024
 # * 
 # ************************************************************************  
 
@@ -33,14 +33,14 @@ HostKey /etc/ssh/ssh_host_ed25519_key
 
 # ## Encryption algorithms (ciphers) (check with ssh-audit).
 # ## STIG [V-238217] (Value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr' is recommended).
-# ## Azure CCEID [CCE-14491-5]: aes128-ctr,aes256-ctr,aes192-ctr.
+# ## Azure CCE-14491-5: aes128-ctr,aes256-ctr,aes192-ctr
 # ## Terrapin vulnerability (CVE-2023-48795): chacha20-poly1305@openssh.com
 Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com
 
 # ## Message authentication code algorithms (check with ssh-audit).
 # ## The hmac-sha2-512 algorithm is required for PowerShell scripts using the Set-SCPFile function.
 # ## STIG [V-238216] (Value 'MACs hmac-sha2-512,hmac-sha2-256' is recommended).
-# ## Azure: hmac-sha2-512,hmac-sha2-256.
+# ## Azure: hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
 
 # ## Keying.
