@@ -3,12 +3,12 @@
 # * Author:             (c) 2004-2024  Cybionet - Integration & Securite Systeme 
 # * 
 # * File:               sshd_conf 
-# * Version:            1.2.30
+# * Version:            1.2.31
 # * 
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   February 13, 2024
+# * Change:   November 02, 2024
 # * 
 # ************************************************************************  
 
@@ -21,9 +21,8 @@ ListenAddress 0.0.0.0
 
 
 ############ ALGORITHMS ##########################
-
 # ## Key exchange algorithms (check to adjust with ssh-audit).
-# ## STIG [V-255912] (Value 'ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256' is recommended).
+# ## STIG [V-255912] (Recommended value 'ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256').
 KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256
 
 # ## Host-key algorithms (check with ssh-audit).
@@ -32,14 +31,14 @@ HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 
 # ## Encryption algorithms (ciphers) (check with ssh-audit).
-# ## STIG [V-238217] (Value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr' is recommended).
+# ## STIG [V-238217] (recommended value 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr').
 # ## Azure CCE-14491-5: aes128-ctr,aes256-ctr,aes192-ctr
 # ## Terrapin vulnerability (CVE-2023-48795): chacha20-poly1305@openssh.com
 Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com
 
 # ## Message authentication code algorithms (check with ssh-audit).
 # ## The hmac-sha2-512 algorithm is required for PowerShell scripts using the Set-SCPFile function.
-# ## STIG [V-238216] (Value 'MACs hmac-sha2-512,hmac-sha2-256' is recommended).
+# ## STIG [V-238216] (Recommended value 'MACs hmac-sha2-512,hmac-sha2-256').
 # ## Azure: hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
 
@@ -51,7 +50,7 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
 # ## Logging.
 SyslogFacility AUTH
 
-# ## Cisofy [SSH-7408] (Value 'VERBOSE' is recommended).
+# ## Cisofy [SSH-7408] (Recommended value 'VERBOSE').
 LogLevel INFO
 
 
@@ -61,29 +60,32 @@ LogLevel INFO
 LoginGraceTime 1m
 
 # ## Verify remote access using SSH prevents users from logging on directly as root.
-# ## STIG [V-75827] (Value 'no' is recommended).
+# ## STIG [75827] (Recommended value 'no').
 PermitRootLogin no
 
 # ## With the StrictModes option, it will only use those files which are properly configured (e.g. not using chmod 777 applied).
-# ## Cisofy [SSH-7416] (Value 'yes' is recommended).
+# ## Cisofy [SSH-7416] (Recommended value 'yes').
 StrictModes yes
 
-# ## Cisofy [SSH-7408] (Value '3' is recommended).
+# ## Cisofy [SSH-7408] (Recommended value '3').
 MaxAuthTries 3
 
-# ## Cisofy [SSH-7408] (Value '2' is recommended).
+# ## Cisofy [SSH-7408] (Recommended value '2').
 MaxSessions 2
 
 # ## Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon.
 # ## Protect a system from denial of service due to a large number of pending authentication connection attempts.
+# ## 10: Number of unauthenticated connections before we start dropping.
+# ## 30: Percentage chance of dropping once we reach 10 (increases linearly for more than 10).
+# ## 100: Maximum number of connections at which we start dropping everything.
 MaxStartups 10:30:100
 
 # ## Indicates the timeout in seconds. After x number of seconds, ssh server will send a message to the client asking for response (Default is '0').
-# ## STIG [V-238213] (Value '600 or less' is recommended).
+# ## STIG [V238213] (Recommended value '600 or less').
 ClientAliveInterval 600
 
 # ## Indicates the total number of checkalive message sent by the ssh server without getting any response from the ssh client (Default is '3').
-# ## STIG [V-238212] (Value '1' is recommended).
+# ## STIG [V-238212] (Recommended value '1').
 ClientAliveCountMax 1
 
 # ## Set this to 'yes' to enable PAM authentication, account processing,
@@ -113,8 +115,12 @@ ChallengeResponseAuthentication no
 # ## Needed for Yubikey.
 #PubkeyAcceptedKeyTypes sk-ecdsa-sha2-nistp256@openssh.com,sk-ssh-ed25519@openssh.com
 
-# ## Needed for AutoSSH, VSCode or Port Forwarding (Set value to 'no' if not use).
+# ## Needed for AutoSSH or Port Forwarding (Set value to 'no' if not use).
 AllowTcpForwarding no
+
+# ## Need for VSCode - Remote SSH Extension.
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
 
 # ## This one for sockets connexion (Defaut is 'yes').
 #AllowStreamLocalForwarding yes
@@ -137,7 +143,6 @@ AllowTcpForwarding no
 
 
 ############ ############ ########################
-
 # ## Cisofy [SSH-7408] (Recommended value 'no').
 TCPKeepAlive yes
 
@@ -200,7 +205,6 @@ PrintMotd no
 
 # ## Default banner path.
 # ## STIG [V-238218].
-#Banner none
 Banner /etc/issue.net
 
 # ## Annotation added to SSHD version.
@@ -221,9 +225,9 @@ UseDNS no
 # ## DenyUsers, AllowUsers, DenyGroups, and finally AllowGroups.
 
 # ## Restricted group.
-AllowGroups restricted
+AllowGroups SSHAuthorized
 
-# ## User Restreint with restricted group.
+# ## User Restreint with restricted group (for Ansible for example).
 #AllowUsers ans_deploy
 
 #Match group restricted.
