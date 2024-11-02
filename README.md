@@ -37,6 +37,8 @@ sudo groupadd SSHAuthorized
 sudo usermod -a -G SSHAuthorized yourusername
 ```
 
+3. TEST! Do not disconnect your SSH session, but try to establish a new SSH connection to check if everything works correctly.
+
 
 ## DELEGATED ADMINS GROUP FOR SUDO ACCESS
 
@@ -69,8 +71,6 @@ and put this line in the file.
 # Allow all user in "DelegatedAdmins" group to sudo for all commands.
 %DelegatedAdmins ALL=(ALL) ALL
 ```
-
-2. TEST!! Don't disconnect your SSH session, and try to establish a new SSH connection to see if everything work fine.
 
 
 ## RECOMMENDATION
