@@ -10,6 +10,7 @@ Here is a configuration file "sshd_config" for the SSHD service, annotated accor
 ## "FEATURES"
 
 - Complies with STIG recommendations
+- Complies with NIST recommendations
 - Complies with Cisofy recommendations
 - Complies with RHEL CCE recommendations
 - Verification done with ssh-audit for
@@ -21,6 +22,29 @@ Here is a configuration file "sshd_config" for the SSHD service, annotated accor
 - Use the "SSHAuthorized" group to allow users to connect into the machine via SSH.
 - Use the "DelegatedAdmins" group to grant sudo permissions to delegated administrators of the machine.
 - Optional, use the "PrivilegiedUsers" group to grant restricted sudo permissions to priviligied users on the machine.
+
+
+## Granting the correct permissions
+
+### Identify the owners of the SSH server configuration file (NIST CCE-82901-0 & CCE-82898-8
+
+To correctly set the user and group that owns the /etc/ssh/sshd_config file, run the following command:
+
+```bash
+sudo chown root:root /etc/ssh/sshd_config
+```
+
+Service configuration files determine the functionality of their respective services. Incorrect configuration can lead to vulnerabilities and security holes. It is therefore essential that these files are assigned to the correct user/group to prevent unauthorized changes.
+
+### Validating SSH configuration file permissions [NIST CCE-82894-7]
+
+To correctly set the permissions of the /etc/ssh/sshd_config file, run the following command:
+
+```bash
+sudo chmod 0600 /etc/ssh/sshd_config
+```
+
+Service configuration files enable or disable essential features. Incorrect configuration can lead to vulnerabilities and compromise security. It is therefore crucial that these files have the correct permissions to prevent unauthorized changes.
 
 
 ## RESTRICTED GROUP FOR SSH ACCESS

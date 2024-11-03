@@ -3,12 +3,12 @@
 # * Author:             (c) 2004-2024  Cybionet - Integration & Securite Systeme 
 # * 
 # * File:               sshd_conf 
-# * Version:            1.2.31
+# * Version:            1.2.32
 # * 
 # * Description:        Configuration of SSHD service complying with Cybionet standards.
 # * 
 # * Creation: April 14, 2016 
-# * Change:   November 02, 2024
+# * Change:   November 03, 2024
 # * 
 # ************************************************************************  
 
@@ -16,6 +16,7 @@
 
 ############ LISTERNER ###########################
 Port 2222
+# ## NIST [CCE-80894-9] (Recommended value '2').
 Protocol 2
 ListenAddress 0.0.0.0
 
@@ -50,7 +51,8 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
 # ## Logging.
 SyslogFacility AUTH
 
-# ## Cisofy [SSH-7408] (Recommended value 'VERBOSE').
+# ## NIST [CCE-82420-1], Cisofy [SSH-7408] (Recommended value 'VERBOSE').
+# ## NIST [CCE-82282-5] (Recommended value 'INFO').
 LogLevel INFO
 
 
@@ -60,16 +62,17 @@ LogLevel INFO
 LoginGraceTime 1m
 
 # ## Verify remote access using SSH prevents users from logging on directly as root.
-# ## STIG [75827] (Recommended value 'no').
+# ## STIG [75827], NIST [CCE-80901-2] (Recommended value 'no').
 PermitRootLogin no
 
 # ## With the StrictModes option, it will only use those files which are properly configured (e.g. not using chmod 777 applied).
-# ## Cisofy [SSH-7416] (Recommended value 'yes').
+# ## NIST [CCE-80904-6], Cisofy [SSH-7416] (Recommended value 'yes').
 StrictModes yes
 
-# ## Cisofy [SSH-7408] (Recommended value '3').
+# ## Cisofy [SSH-7408], NIST [CCE-83500-9] (Recommended value '3').
 MaxAuthTries 3
 
+# ## NIST [CCE-83357-4] (Recommended value '10').
 # ## Cisofy [SSH-7408] (Recommended value '2').
 MaxSessions 2
 
@@ -81,11 +84,12 @@ MaxSessions 2
 MaxStartups 10:30:100
 
 # ## Indicates the timeout in seconds. After x number of seconds, ssh server will send a message to the client asking for response (Default is '0').
-# ## STIG [V238213] (Recommended value '600 or less').
+# ## STIG [V238213], NIST [CCE-80906-1] (Recommended value '600 or less').
 ClientAliveInterval 600
 
 # ## Indicates the total number of checkalive message sent by the ssh server without getting any response from the ssh client (Default is '3').
 # ## STIG [V-238212] (Recommended value '1').
+# ## NIST [CCE-80907-9] (Recommended value '0').
 ClientAliveCountMax 1
 
 # ## Set this to 'yes' to enable PAM authentication, account processing,
@@ -102,6 +106,7 @@ UsePAM yes
 
 ############ APPLICATIONS ########################
 # ## Needed for Ansible.
+# ## NIST [CCE-82345-0] (Recommended value 'no').
 PubkeyAuthentication yes
 AuthorizedKeysFile %h/.ssh/authorized_keys
 
@@ -115,7 +120,8 @@ ChallengeResponseAuthentication no
 # ## Needed for Yubikey.
 #PubkeyAcceptedKeyTypes sk-ecdsa-sha2-nistp256@openssh.com,sk-ssh-ed25519@openssh.com
 
-# ## Needed for AutoSSH or Port Forwarding (Set value to 'no' if not use).
+# ## Needed for AutoSSH or Port Forwarding (Set value to 'yes' if needed).
+# ## NIST [CCE-83301-2] (Recommended value 'no').
 AllowTcpForwarding no
 
 # ## Need for VSCode - Remote SSH Extension.
@@ -128,7 +134,9 @@ AllowTcpForwarding no
 
 ############ KERBEROS ############################
 # ## Kerberos options.
-#KerberosAuthentication no
+# ## NISt [CCE-80898-0] (Recommended value 'no').
+KerberosAuthentication no
+
 #KerberosOrLocalPasswd yes
 #KerberosTicketCleanup yes
 #KerberosGetAFSToken no
@@ -136,7 +144,9 @@ AllowTcpForwarding no
 
 ############ GSSAPI ##############################
 # ## GSSAPI options.
-#GSSAPIAuthentication no
+# ## NIST [CCE-80897-2] (Recommended value 'no').
+GSSAPIAuthentication no
+
 #GSSAPICleanupCredentials yes
 #GSSAPIStrictAcceptorCheck yes
 #GSSAPIKeyExchange no
@@ -149,36 +159,39 @@ TCPKeepAlive yes
 # ## Cisofy [SSH-7408] (Recommended value 'no').
 AllowAgentForwarding no
 
-# ## Cisofy [SSH-7408] (Recommended value 'no').
+# ## NIST [CCE-80895-6], Cisofy [SSH-7408] (Recommended value 'no').
 Compression no
 
 # ## An attacker could use flaws in the Rhosts protocol to gain access. Don't read the user's ~/.rhosts and ~/.shosts files.
-# ## Azure CCEID [CCE-4030-3].
+# ## NIST [CCE-80899-8], Azure CCEID [CCE-4030-3] (Recommended value 'yes').
 IgnoreRhosts yes
 
 # ## For this to work you will also need host keys in /etc/ssh/ssh_known_hosts. An attacker could use use host-based authentication to gain access from a compromised host.
-# ## Azure CCEID [CCE-4370-3].
+# ## NIST [CCE-80786-7], Azure CCEID [CCE-4370-3] (Recommended value 'no').
 HostbasedAuthentication no
 
+# ## NIST [CCE-80900-4] (Recommended value 'no').
+RhostsRSAAuthentication no
+
 # ## Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication.
-# ## STIG [V-230290] (Recommended value 'yes').
+# ## STIG [V-230290], NIST [CCE-80902-0] (Recommended value 'yes').
 IgnoreUserKnownHosts yes
 
 # ## Users are not allowed to set environment options for SSH. An attacker may be able to bypass some access restrictions over SSH.
-# ## STIG [V-238218] (Recommended value 'no').
-# ## Azure CCEID [CCE-14716-5].
+# ## STIG [V-238218], NIST [CCE-80903-8], Azure CCEID [CCE-14716-5] (Recommended value 'no').
 PermitUserEnvironment no
 
 # ## STIG [V-63213][V-230330] (Recommended value 'no').
 GatewayPorts no
 
 # ## STIG [V-230527] (Recommended value '1G 1h').
+# ## NIST [CCE-82177-7] (Recommended value '512M').
 RekeyLimit 1G 1h
 
 
 ############ PASSWORD ############################
 # ## To enable empty passwords, change to 'yes' (NOT RECOMMENDED).
-# ## STIG [V-238218] (Recommended value 'no').
+# ## STIG [V-238218], NIST [CCE-80896-4] (Recommended value 'no').
 PermitEmptyPasswords no
 
 # ## Change to 'no' to disable tunneled clear text passwords.
@@ -191,7 +204,7 @@ AcceptEnv LANG LC_*
 
 
 ############ X11 #################################
-# ## STIG [V-238219] (Recommended value 'no').
+# ## STIG [V-238219], NIST [CCE-83360-8] (Recommended value 'no').
 X11Forwarding no
 
 X11DisplayOffset 10
@@ -204,14 +217,14 @@ X11UseLocalhost yes
 PrintMotd no
 
 # ## Default banner path.
-# ## STIG [V-238218].
+# ## STIG [V-238218], NIST [CCE-80905-3] (Recommended value '/etc/issue').
 Banner /etc/issue.net
 
 # ## Annotation added to SSHD version.
 VersionAddendum - Cybionet
 
 # ## Display the date and time of the last successful account logon upon logon.
-# ## STIG [V-72245].
+# ## STIG [V-72245], NIST [CCE-82281-7] (Recommended value 'yes').
 PrintLastLog yes
 
 
@@ -229,6 +242,9 @@ AllowGroups SSHAuthorized
 
 # ## User Restreint with restricted group (for Ansible for example).
 #AllowUsers ans_deploy
+
+# ## NIST [CCE-82422-7] (Limit Users' SSH Access).
+#DenyUsers username
 
 #Match group restricted.
 #  AllowUsers *
